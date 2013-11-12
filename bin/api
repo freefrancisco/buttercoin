@@ -3,7 +3,20 @@
 # Buttercoin API binary script
 # This binary will start a single instance of a Buttercoin websocket API server
 
-Buttercoin = require('../lib/buttercoin')
-butter = new Buttercoin();
+Q = require('q')
+EngineWebsocketServer = require('../lib/ews/ew_server')
+EngineWebsocketSlave = require('../lib/ews/ew_slave')
+ApiServer = require('../lib/api/server')
+argv = require('optimist').argv
+config = require(argv.config)
 
-butter.api.start {port: 3001, host: "0.0.0.0"}, (err, server) =>
+master = new EngineWebsocketServer(config.master)
+slaves = for x in config.slaves
+  new EngineWebsocketSlave(x)
+api = new ApiServer(config.api)
+
+master.start().then =>
+  Q.all (x.start() for x in slaves)
+.then =>
+  api.start()
+.done()

@@ -13,3 +13,13 @@ results
 
 npm-debug.log
 node_modules
+tmp
+transaction.log
+test.log
+vm/
+*testjournal
+*.swp
+*.un~
+
+Berksfile.lock
+.vagrant
